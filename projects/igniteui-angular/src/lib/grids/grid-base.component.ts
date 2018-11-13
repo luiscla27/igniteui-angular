@@ -537,7 +537,7 @@ export abstract class IgxGridBaseComponent implements OnInit, OnDestroy, AfterCo
         if (this._height !== value) {
             this._height = value;
             requestAnimationFrame(() => {
-                this.calculateGridHeight();
+                this.calculateGridSizes();
                 this.cdr.markForCheck();
             });
         }
@@ -3441,10 +3441,10 @@ export abstract class IgxGridBaseComponent implements OnInit, OnDestroy, AfterCo
         if (this._height && this._height.indexOf('%') !== -1) {
             /*height in %*/
             this.calcHeight = this._calculateGridBodyHeight(
-                parseInt(computed.getPropertyValue('height'), 10), toolbarHeight, pagingHeight, groupAreaHeight);
+                parseFloat(computed.getPropertyValue('height')), toolbarHeight, pagingHeight, groupAreaHeight);
         } else {
             this.calcHeight = this._calculateGridBodyHeight(
-                parseInt(this._height, 10), toolbarHeight, pagingHeight, groupAreaHeight);
+                parseFloat(this._height), toolbarHeight, pagingHeight, groupAreaHeight);
         }
     }
 
@@ -3507,10 +3507,9 @@ export abstract class IgxGridBaseComponent implements OnInit, OnDestroy, AfterCo
 
         if (this._width && this._width.indexOf('%') !== -1) {
             /* width in %*/
-            const width = parseInt(computed.getPropertyValue('width'), 10);
+            const width = parseFloat(computed.getPropertyValue('width'));
             if (Number.isFinite(width) && width !== this.calcWidth) {
                 this.calcWidth = width;
-
                 this.cdr.markForCheck();
             }
         } else {
@@ -3544,6 +3543,10 @@ export abstract class IgxGridBaseComponent implements OnInit, OnDestroy, AfterCo
         this.calculateGridWidth();
         this.cdr.detectChanges();
         this.calculateGridHeight();
+        this.cdr.detectChanges();
+        // Resize width again for cases when vertical scrollbar is visible
+         // this.calculateGridWidth();
+         // this.cdr.detectChanges();
         if (this.rowSelectable) {
             this.calcRowCheckboxWidth = this.headerCheckboxContainer.nativeElement.clientWidth;
         }
